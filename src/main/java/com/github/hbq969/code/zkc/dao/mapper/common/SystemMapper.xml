@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.hbq969.code.zkc.dao.SystemDao">
+    <select id="queryRoleList" resultType="com.github.hbq969.code.zkc.dao.entity.RoleEntity"
+            parameterType="com.github.hbq969.code.zkc.dao.entity.RoleEntity">
+        select id AS "id",
+        name AS "name",
+        description AS "desc",
+        created_at AS "createdAt",
+        updated_at AS "updatedAt"
+        from h_zkc_roles
+        <where>
+            <if test="name!=null and name!=''">
+                <bind name="nameLike" value="'%' + name + '%'"/>
+                and name like #{nameLike}
+            </if>
+            <if test="desc!=null and desc!=''">
+                <bind name="descLike" value="'%' + desc + '%'"/>
+                and description like #{descLike}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveRoleEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.RoleEntity">
+        insert into h_zkc_roles(name, description, created_at)
+        values (#{name}, #{desc}, #{createdAt})
+    </insert>
+
+    <update id="updateRoleEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.RoleEntity">
+        update h_zkc_roles
+        <set>
+            <if test="name!=null and name!=''">
+                name = #{name},
+            </if>
+            <if test="desc!=null and desc!=''">
+                description = #{desc},
+            </if>
+            updated_at=#{updatedAt}
+            where id=#{id}
+        </set>
+    </update>
+
+    <delete id="deleteRoleEntity">
+        delete
+        from h_zkc_roles
+        where id = #{id}
+    </delete>
+
+    <select id="queryRoleMenus" resultType="java.util.Map">
+        select a.menu_id AS "key",
+               b.name    AS "label",
+               b.url     AS "url"
+        from h_zkc_role_menus a,
+             h_zkc_menus b
+        where a.role_id = #{id}
+          and a.menu_id = b.id
+    </select>
+
+    <select id="queryUserList" resultType="com.github.hbq969.code.zkc.dao.entity.UserEntity"
+            parameterType="com.github.hbq969.code.zkc.dao.entity.UserEntity">
+        select a.id AS "id",
+        a.username AS "username",
+        a.password AS "password",
+        a.role_id AS "roleId",
+        b.name AS "roleName",
+        a.created_at AS "createdAt",
+        a.updated_at AS "updatedAt"
+        from h_zkc_users a,h_zkc_roles b
+        <where>
+            a.role_id=b.id
+            <if test="username!=null and username!=''">
+                <bind name="usernameLike" value="'%' + username + '%'"/>
+                and username like #{usernameLike}
+            </if>
+            <if test="roleId!=null and roleId!=''">
+                and role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserEntity" resultType="com.github.hbq969.code.zkc.dao.entity.UserEntity">
+        select a.id AS "id",
+        a.username AS "username",
+        a.password AS "password",
+        a.role_id AS "roleId",
+        b.name AS "roleName",
+        a.created_at AS "createdAt",
+        a.updated_at AS "updatedAt"
+        from h_zkc_users a,h_zkc_roles b
+        <where>
+            a.role_id=b.id
+            and a.id=#{id}
+        </where>
+    </select>
+
+    <delete id="saveUserEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.UserEntity">
+        insert into h_zkc_users(username, password, role_id, created_at)
+        values (#{username}, #{password}, #{roleId}, #{createdAt})
+    </delete>
+
+    <update id="updateUserEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.UserEntity">
+        update h_zkc_users
+        <set>
+            <if test="password!=null and password!=''">
+                password = #{password},
+            </if>
+            <if test="roleId!=null and roleId!=''">
+                role_id = #{roleId},
+            </if>
+            updated_at=#{updatedAt}
+            where id=#{id}
+        </set>
+    </update>
+
+    <delete id="deleteUserEntity">
+        delete
+        from h_zkc_users
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteUserEntities">
+        delete
+        from h_zkc_users
+        where role_id = #{roleId}
+    </delete>
+
+    <select id="queryMenuList" resultType="com.github.hbq969.code.zkc.dao.entity.MenuEntity"
+            parameterType="com.github.hbq969.code.zkc.dao.entity.MenuEntity">
+        select id AS "id",
+        name AS "name",
+        url AS "url",
+        parent_id AS "parentId",
+        order_index AS "orderIndex",
+        created_at AS "createdAt",
+        updated_at AS "updatedAt"
+        from h_zkc_menus
+        <where>
+            <if test="name!=null and name!=''">
+                <bind name="nameLike" value="'%' + name + '%'"/>
+                and name like #{nameLike}
+            </if>
+            <if test="url!=null and url!=''">
+                <bind name="urlLike" value="'%' + url + '%'"/>
+                and url like #{urlLike}
+            </if>
+        </where>
+    </select>
+
+    <delete id="saveMenuEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.MenuEntity">
+        insert into h_zkc_menus(name, url, parent_id, order_index, created_at)
+        values (#{name}, #{url}, #{parentId}, #{orderIndex}, #{createdAt})
+    </delete>
+
+    <update id="updateMenuEntity" parameterType="com.github.hbq969.code.zkc.dao.entity.MenuEntity">
+        update h_zkc_menus
+        <set>
+            <if test="name!=null and name!=''">
+                name = #{name},
+            </if>
+            <if test="url!=null and url!=''">
+                url = #{url},
+            </if>
+            updated_at=#{updatedAt}
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteMenuEntity">
+        delete
+        from h_zkc_menus
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteMenuEntities">
+        delete
+        from h_zkc_role_menus
+        where role_id = #{roleId}
+    </delete>
+
+    <update id="updateUserPassword" parameterType="com.github.hbq969.code.zkc.view.request.PasswordModify">
+        update h_zkc_users
+        set password=#{newPassword}
+        where id = #{id}
+    </update>
+
+    <select id="queryUserByName" resultType="com.github.hbq969.code.zkc.dao.entity.UserEntity">
+        select a.id AS "id",
+        a.username AS "username",
+        a.password AS "password",
+        a.role_id AS "roleId",
+        b.name AS "roleName",
+        a.created_at AS "createdAt",
+        a.updated_at AS "updatedAt"
+        from h_zkc_users a,h_zkc_roles b
+        <where>
+            a.role_id=b.id
+            and a.username=#{name}
+        </where>
+    </select>
+</mapper>
