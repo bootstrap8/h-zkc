@@ -2,6 +2,11 @@ import {createRouter, createWebHistory, createWebHashHistory} from 'vue-router'
 
 const routes = [
     {
+        path: '',
+        name: '缺省',
+        component: () => import('@/views/config/login.vue')
+    },
+    {
         path: '/login',
         name: '登录',
         component: () => import('@/views/config/login.vue')
@@ -44,7 +49,7 @@ const routes = [
     },
     {
         path: '/menu',
-        name: '刷新配置',
+        name: '菜单管理',
         component: () => import('@/views/config/Menu.vue')
     }
 ]

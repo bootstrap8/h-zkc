@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -55,6 +56,8 @@ public class SystemServiceImpl implements SystemService, InitializingBean {
 
     private Cache<String, HttpSession> sessions;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
     @Override
     public void afterPropertiesSet() throws Exception {
         log.info("配置的cookie、会话超时时间: {} 秒。", conf.getCookieMaxAgeSec());
@@ -64,9 +67,9 @@ public class SystemServiceImpl implements SystemService, InitializingBean {
                 .concurrencyLevel(10)
                 .expireAfterAccess(conf.getCookieMaxAgeSec(), TimeUnit.SECONDS)
                 .removalListener((RemovalListener<String, HttpSession>) notif -> {
-            log.info("session自动过期，sid: {}", notif.getKey());
-            notif.getValue().invalidate();
-        }).build();
+                    log.info("session自动过期，sid: {}", notif.getKey());
+                    notif.getValue().invalidate();
+                }).build();
     }
 
     @Override
@@ -114,7 +117,7 @@ public class SystemServiceImpl implements SystemService, InitializingBean {
 
     @Override
     public void saveUserEntity(UserEntity entity) {
-        entity.initial();
+        entity.initial(encoder);
         systemDao.saveUserEntity(entity);
     }
 
@@ -135,9 +138,10 @@ public class SystemServiceImpl implements SystemService, InitializingBean {
         if (ue == null) {
             throw new UnsupportedOperationException("用户不存在");
         }
-        if (!StringUtils.equals(passwordModify.getOldPassword(), ue.getPassword())) {
+        if (!encoder.matches(passwordModify.getOldPassword(), ue.getPassword())) {
             throw new IllegalArgumentException("老密码不对");
         }
+        passwordModify.hash(encoder);
         systemDao.updateUserPassword(passwordModify);
     }
 
@@ -194,7 +198,7 @@ public class SystemServiceImpl implements SystemService, InitializingBean {
     public void login(LoginInfo login, HttpServletRequest request, HttpServletResponse response) {
         UserEntity user = systemDao.queryUserByName(login.getUsername());
         log.info("查询到用户信息: {}", user);
-        if (StringUtils.equals(user.getPassword(), login.getPassword())) {
+        if (encoder.matches(login.getPassword(), user.getPassword())) {
             log.info("密码验证一致");
             HttpSession session = request.getSession(true);
             // 创建会话对象

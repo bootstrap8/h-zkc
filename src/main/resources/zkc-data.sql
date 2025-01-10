@@ -10,9 +10,9 @@ insert into h_zkc_menus(id,name,url,parent_id,order_index,created_at) values(6,'
 insert into h_zkc_menus(id,name,url,parent_id,order_index,created_at) values(7,'备份、恢复菜单','backup',-1,6,1735800456);
 insert into h_zkc_menus(id,name,url,parent_id,order_index,created_at) values(8,'刷新配置菜单','refresh',-1,7,1735800456);
 insert into h_zkc_menus(id,name,url,parent_id,order_index,created_at) values(9,'系统管理菜单','system',-1,8,1735800456);
-insert into h_zkc_users(username,password,role_id,created_at) values('admin','$14Gr2er',1,1735800456);
-insert into h_zkc_users(username,password,role_id,created_at) values('manage','123456',2,1735800456);
-insert into h_zkc_users(username,password,role_id,created_at) values('user','123456',3,1735800456);
+insert into h_zkc_users(username,password,role_id,created_at) values('admin','$2a$10$2n7McJFmaxR78hcEU0TELuGGLwpZtqiJDKIolf7SnSETwBye8AYpW',1,1735800456);
+insert into h_zkc_users(username,password,role_id,created_at) values('manage','$2a$10$oHdG4ticIvzG.8BlBjI9HuC3c9RFSD3u.vr8aphNXC4.SckKfIyLq',2,1735800456);
+insert into h_zkc_users(username,password,role_id,created_at) values('user','$2a$10$qRoxm0i0yb1E0MVId.NjL.A/Ac3W4puydYhLeufA5zQ8KJmiAKBIO',3,1735800456);
 insert into h_zkc_role_menus(role_id,menu_id) values(2,1);
 insert into h_zkc_role_menus(role_id,menu_id) values(2,2);
 insert into h_zkc_role_menus(role_id,menu_id) values(2,5);

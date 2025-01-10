@@ -5,6 +5,8 @@ import com.github.hbq969.code.common.utils.FormatTime;
 import com.github.hbq969.code.dict.service.api.DictAware;
 import com.github.hbq969.code.dict.service.api.DictModel;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * @author : hbq969@gmail.com
@@ -34,8 +36,11 @@ public class UserEntity implements DictModel, DictAware {
         }
     }
 
-    public void initial() {
+    public void initial(BCryptPasswordEncoder encoder) {
         this.createdAt = FormatTime.nowSecs();
+        if (StringUtils.isNotEmpty(this.password)) {
+            this.password = encoder.encode(this.password);
+        }
     }
 
     public void update() {

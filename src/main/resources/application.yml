@@ -129,6 +129,8 @@ zkc:
   urls: docker.for.mac.host.internal:22181
   connect-timeout-mills: 5000
   dialect: embedded
+  user: foo
+  pwd: bar
   exclude-urls:
     - "/**/*.js"
     - "/**/*.css"

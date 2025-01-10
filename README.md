@@ -1,18 +1,22 @@
-# User Guide
-## 快速安装
+# 用户指南 (User Guide)
+## 快速安装 (Quick Start)
 
-- 构建
+- 构建 (Build)
 ```bash
+cd h-zkc/src/main/resources/static
+nvm use 16
+npm i && npm run build
+cd h-zkc
 mvn -Dmaven.test.skip=true clean package -U
 ```
 
-- 解压
+- 解压 (Unzip)
 ```bash
 cd target
 tar xvf h-zkc-1.0-SHAPSHOT.tar.gz
 ```
 
-- 配置
+- 配置 (Config)
 ```bash
  cd h-zkc-1.0-SHAPSHOT/deploy/bootstrap/config
  vim application-mysql.yml
@@ -48,13 +52,13 @@ zkc:
   dialect: mysql
 ```
 
-- 部署
+- 部署 (Deploy)
 ```bash
 cd h-zkc-1.0-SHAPSHOT/deploy/bootstrap
 sh start.sh
 ```
 
-# 功能展示
+# 功能展示 (Features)
 ![功能展示](src/main/resources/static/src/assets/readme-login.png)
 
 ![功能展示](src/main/resources/static/src/assets/readme-main.png)
@@ -78,3 +82,33 @@ sh start.sh
 ![功能展示](src/main/resources/static/src/assets/readme-user.png)
 
 ![功能展示](src/main/resources/static/src/assets/readme-menu.png)
+
+
+## 问题联系 (Contact)
+
+[hbq969@gmail.com](mailto:hbq969@gmail.com)
+
+
+
+## 许可 (License)
+
+The MIT License (MIT)
+
+Copyright (c) 2024 hbq969
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
