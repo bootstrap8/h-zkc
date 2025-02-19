@@ -5,6 +5,10 @@ import com.github.hbq969.code.zkc.config.ZkcProperties;
 import com.github.hbq969.code.zkc.model.LeafBean;
 import com.github.hbq969.code.zkc.model.ZKNode;
 import com.github.hbq969.code.zkc.service.ZookeeperService;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -14,6 +18,7 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author hbq
@@ -46,10 +53,30 @@ public class ZookeeperServiceImpl implements ZookeeperService, InitializingBean,
 
     private ZooKeeper zk;
 
+    private Cache<String, Set<LeafBean>> searchCache = CacheBuilder.newBuilder()
+            .concurrencyLevel(Runtime.getRuntime().availableProcessors())
+            .maximumSize(500)
+            .initialCapacity(100)
+            .removalListener((RemovalListener<String, Set<LeafBean>>) notification -> {
+                log.info("缓存失效, {}", notification.getKey());
+            }).build();
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
         connectionZookeeper();
+//        initialSearchCache();
+    }
+
+    private void initialSearchCache() {
+        CompletableFuture.runAsync(() -> {
+            Set<LeafBean> leaves = new TreeSet<>();
+            try {
+                exportTreeInternal(leaves, ZK_ROOT_NODE);
+            } catch (Exception e) {
+                log.error("初始化加载全量配置异常", e);
+            }
+        });
     }
 
     @Override
@@ -201,11 +228,9 @@ public class ZookeeperServiceImpl implements ZookeeperService, InitializingBean,
         Set<LeafBean> searchResult = new TreeSet<>();
         Set<LeafBean> leaves = new TreeSet<>();
         exportTreeInternal(leaves, ZK_ROOT_NODE);
-        for (LeafBean leaf : leaves) {
-            if (leaf.containKey(path, name, value)) {
-                searchResult.add(leaf);
-            }
-        }
+        leaves.parallelStream()
+                .filter(leaf -> leaf.containKey(path, name, value))
+                .forEach(searchResult::add);
         return searchResult;
     }
 
@@ -301,15 +326,20 @@ public class ZookeeperServiceImpl implements ZookeeperService, InitializingBean,
 
         List<String> children = zk.getChildren(path, false);
         if (children != null) {
-            for (String child : children) {
-                String childPath = getNodePath(path, child);
-                List<String> subChildren = Collections.emptyList();
-                subChildren = zk.getChildren(childPath, false);
-                boolean isFolder = subChildren != null && !subChildren.isEmpty();
-                if (!isFolder) {
-                    leaves.add(this.getNodeValue(zk, path, childPath, child, "ADMIN"));
-                }
-            }
+            leaves = children.parallelStream()
+                    .map(child -> {
+                        String childPath = getNodePath(path, child);
+                        List<String> subChildren = null;
+                        try {
+                            subChildren = zk.getChildren(childPath, false);
+                        } catch (Exception e) {
+                            log.error(String.format("查询路径: %s 下子元素异常", childPath), e);
+                        }
+                        boolean isFolder = subChildren != null && !subChildren.isEmpty();
+                        return !isFolder ? this.getNodeValue(zk, path, childPath, child, "ADMIN") : null;
+                    })
+                    .filter(leaf -> leaf != null)
+                    .collect(Collectors.toList());
         }
 
         Collections.sort(leaves, new Comparator<LeafBean>() {

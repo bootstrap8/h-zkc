@@ -645,7 +645,7 @@ const exportSelected = () => {
 }
 
 const importDialogFormVisible = ref(false)
-const uploadAction = ref('/import/v1.0')
+const uploadAction = ref('http://localhost:30145/hbq969-zkc/import/v1.0')
 const importRef = ref<UploadInstance>()
 const importForm = reactive({
   cover: true
