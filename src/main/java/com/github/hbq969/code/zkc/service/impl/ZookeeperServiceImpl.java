@@ -9,7 +9,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -352,12 +354,16 @@ public class ZookeeperServiceImpl implements ZookeeperService, InitializingBean,
         return leaves;
     }
 
+    public static Set<String> UN_REMOVE_DIR = Sets.newHashSet("/", "/zookeeper", "/zookeeper/quota", "/zookeeper/config");
+
     private void deleteFolderInternal(String folderPath, ZooKeeper zk) throws KeeperException,
             InterruptedException {
         for (String child : zk.getChildren(folderPath, false)) {
             deleteFolderInternal(getNodePath(folderPath, child), zk);
         }
-        zk.delete(folderPath, -1);
+        if (!UN_REMOVE_DIR.contains(folderPath)) {
+            zk.delete(folderPath, -1);
+        }
     }
 
     private void connectionZookeeper() throws IOException, InterruptedException {

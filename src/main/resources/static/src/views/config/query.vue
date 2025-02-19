@@ -237,9 +237,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN || menuMap['search']">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="searchForm" :inline="true" size="small">
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 数据源配置 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="searchForm" :inline="true" size="small" style="margin-top: 20px">
       <el-form-item label="目录：">
         <el-input v-model="searchForm.path" type="text"/>
       </el-form-item>
@@ -260,7 +263,6 @@ const _ = (window as any).ResizeObserver;
       </el-form-item>
     </el-form>
 
-    <el-divider content-position="left">查询结果</el-divider>
     <el-table ref="tableRef" :data="searchData" style="width: 100%" :border="true" table-layout="fixed" :stripe="true"
               size="small"
               :highlight-current-row="true" :header-cell-style="headerCellStyle">

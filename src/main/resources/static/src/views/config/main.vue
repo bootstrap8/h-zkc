@@ -156,7 +156,8 @@
           </div>
           <el-table :data="searchTableData" style="width: 100%" :border="false" table-layout="fixed" :stripe="true"
                     size="small" :highlight-current-row="true" class="leaf" :header-cell-style="headerCellStyle">
-            <el-table-column fixed="left" width="120" header-align="center" align="center" v-if="isADMIN || menuMap['create']">
+            <el-table-column fixed="left" width="120" header-align="center" align="center"
+                             v-if="isADMIN || menuMap['create']">
               <template #default="scope">
                 <el-button :icon="Edit" circle size="small" title="编辑" @click="showEditDialog(scope)"/>
                 <el-popconfirm title="你确定要删除本条配置?" @confirm="deleteConfig(scope)" :icon="WarningFilled"
@@ -645,7 +646,8 @@ const exportSelected = () => {
 }
 
 const importDialogFormVisible = ref(false)
-const uploadAction = ref('http://localhost:30145/hbq969-zkc/import/v1.0')
+let baseUrl = window.location.protocol + "//" + window.location.host
+const uploadAction = ref(baseUrl + '/hbq969-zkc/import/v1.0')
 const importRef = ref<UploadInstance>()
 const importForm = reactive({
   cover: true

@@ -32,6 +32,8 @@ public interface ConfigDao {
   List<Backup> queryBackups(@Param("startTime") long startTime,
                             @Param("endTime") long endTime);
 
+  Backup queryBackup(@Param("id") String id);
+
   List<BackupDetail> queryBackupDetails(@Param("id") String id);
 
   void deleteBackupById(@Param("id") String id);

@@ -82,4 +82,13 @@
     from hbq_config_bk_detail
     where bk_time <![CDATA[ <= ]]> #{backTime}
   </delete>
+
+  <select id="queryBackup" resultType="com.github.hbq969.code.zkc.model.Backup">
+      select a.id             AS "id",
+             a.bk_time        AS "backTime",
+             a.size           AS "size",
+             a.backup_content AS "content"
+      from hbq_config_bk_main a
+      where a.id = #{id}
+  </select>
 </mapper>

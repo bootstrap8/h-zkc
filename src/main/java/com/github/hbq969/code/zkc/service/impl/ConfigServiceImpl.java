@@ -1,6 +1,7 @@
 package com.github.hbq969.code.zkc.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.UUID;
 import com.github.hbq969.code.common.spring.context.SpringContext;
 import com.github.hbq969.code.common.spring.context.UserInfo;
 import com.github.hbq969.code.common.utils.*;
@@ -10,6 +11,7 @@ import com.github.hbq969.code.zkc.service.ConfigService;
 import com.github.hbq969.code.zkc.service.ZookeeperService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -319,68 +322,39 @@ public class ConfigServiceImpl implements ConfigService, InitializingBean {
         long eclapse = FormatTime.nowMills();
         Set<LeafBean> set = searchTree(null, ImmutableMap.of("path", "", "name", "", "value", ""));
         log.info("查询到需要备份的所有配置信息: {} 条", set.size());
-        context.getOptionalBean(JdbcTemplate.class).ifPresent(jt -> {
-            PlatformTransactionManager tranManager = new DataSourceTransactionManager(jt.getDataSource());
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setTimeout(60);
-            TransactionStatus status = tranManager.getTransaction(def);
-            try {
-                long mills = FormatTime.nowMills();
-                String id = String.join("_", FormatTime.YYYYMMDDHHMISS_NO_JOINER.withMills(mills), UuidUtil.uuid());
-                String sql = "insert into hbq_config_bk_main(id,bk_time,size) values(?,?,?)";
-                log.info("保存备份记录: {}, ({}, {}, {})", sql, id, mills / 1000L, set.size());
-                jt.update(sql, ps -> {
-                    ps.setString(1, id);
-                    ps.setLong(2, mills / 1000L);
-                    ps.setInt(3, set.size());
-                });
-                sql = "insert into hbq_config_bk_detail(id,path,name,str_value,bk_time) values(?,?,?,?,?)";
-                log.info("保存备份记录: {}", sql);
-                String fql = sql;
-                CollectionUtil.split(set, 200).forEach(list -> {
-                    jt.batchUpdate(fql, new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            LeafBean leaf = list.get(i);
-                            ps.setString(1, id);
-                            ps.setString(2, leaf.getPath());
-                            ps.setString(3, leaf.getName());
-                            String strValue = leaf.getStrValue();
-                            if (null == strValue) {
-                                ps.setNull(4, Types.VARCHAR);
-                            } else {
-                                ps.setString(4, strValue);
-                            }
-                            ps.setLong(5, mills / 1000L);
-                        }
 
-                        @Override
-                        public int getBatchSize() {
-                            return list.size();
-                        }
-                    });
-                    log.info("批量保存备份记录: {} 条", list.size());
-                });
-                tranManager.commit(status);
-                long time = FormatTime.nowMills() - eclapse;
-                log.info("备份成功: {}, 耗时: {} ms", id, time);
-            } catch (Exception e) {
-                log.info("备份异常", e);
-                tranManager.rollback(status);
-            }
+        String sql = "insert into hbq_config_bk_main(id,bk_time,size,backup_content) values(?,?,?,?)";
+        log.info("备份配置, {}, {} 条", sql, set.size());
+        context.getBean(JdbcTemplate.class).update(sql, ps -> {
+            ps.setString(1, UUID.fastUUID().toString(true));
+            ps.setLong(2, FormatTime.nowSecs());
+            ps.setInt(3, set.size());
+            ps.setString(4, GsonUtils.toJson(set));
         });
-
+        log.info("备份配置成功, 耗时: {} ms", System.currentTimeMillis() - eclapse);
     }
 
     @Override
     public void recovery(Map map) {
         String id = MapUtils.getString(map, "id");
-        List<BackupDetail> details = configDao.queryBackupDetails(id);
+        Backup backup = configDao.queryBackup(id);
+
+        List<LeafBean> leafs = GsonUtils.parseArray(backup.getContent(), new TypeToken<List<LeafBean>>() {
+        });
+        List<BackupDetail> details = new ArrayList<>();
+        for (LeafBean leaf : leafs) {
+            BackupDetail detail = new BackupDetail();
+            detail.setPath(leaf.getPath());
+            detail.setName(leaf.getName());
+            detail.setValue(leaf.getStrValue());
+            details.add(detail);
+        }
         log.info("读取备份数据[{}], {} 条", id, details.size());
         try {
             try {
                 zookeeperService.deleteFolders(Lists.newArrayList("/"));
             } catch (Exception e) {
+                log.error("清空zk数据异常", e);
             }
             log.info("删除[/]下所有配置成功");
             List<String> importData = new ArrayList<>(details.size());

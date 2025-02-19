@@ -12,6 +12,7 @@ public class Backup {
   private String id;
   private long backTime;
   private int size;
+  private String content;
 
   public String getFmtBackupTime() {
     return FormatTime.YYYYMMDDHHMISS.withSecs(backTime);

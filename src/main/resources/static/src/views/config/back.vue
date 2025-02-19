@@ -157,9 +157,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN || menuMap['backup']">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="haForm" :inline="true" ref="haFormRef" :rules="haRules" size="small">
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 备份 & 恢复 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="haForm" :inline="true" ref="haFormRef" :rules="haRules" size="small" style="margin-top: 20px">
       <el-form-item label="时间：" prop="time">
         <el-date-picker v-model="haForm.time" type="daterange" unlink-panels range-separator="至"
                         start-placeholder="开始时间" end-placeholder="结束时间" format="YYYY-MM-DD"
@@ -178,7 +181,6 @@ const _ = (window as any).ResizeObserver;
       </el-form-item>
     </el-form>
 
-    <el-divider content-position="left">查询结果</el-divider>
     <el-table :data="backupData" style="width: 100%" :border="true" table-layout="fixed" :stripe="true" size="small"
               :highlight-current-row="true" :header-cell-style="headerCellStyle">
       <el-table-column fixed="left" label="操作" width="120" header-align="center" align="center">

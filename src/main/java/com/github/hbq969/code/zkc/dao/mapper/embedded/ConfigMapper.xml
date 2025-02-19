@@ -15,7 +15,8 @@
     (
       `id`      varchar(255) primary key,
       `bk_time` BIGINT,
-      `size`    BIGINT
+      `size`    BIGINT,
+      `backup_content` clob
       )
   </update>
 

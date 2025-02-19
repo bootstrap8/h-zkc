@@ -60,7 +60,7 @@ public class LeafBean implements Comparable<LeafBean> {
   }
 
   public String getStrValue() {
-    if (this.value == null) {
+    if (this.strValue!=null || this.value == null) {
       return this.strValue;
     }
     try {

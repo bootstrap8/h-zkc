@@ -16,7 +16,8 @@
         (
             `id`      varchar(255) primary key,
             `bk_time` BIGINT,
-            `size`    BIGINT
+            `size`    BIGINT,
+            `backup_content` LONGTEXT
         ) ENGINE = InnoDB
           DEFAULT CHARSET = utf8
     </update>
@@ -27,7 +28,7 @@
             `id`      varchar(255),
             `path`    varchar(255),
             `name`    varchar(255),
-            `str_value`   varchar(2000),
+            `str_value`   text,
             `bk_time` BIGINT,
             primary key(id,path,name)
         )

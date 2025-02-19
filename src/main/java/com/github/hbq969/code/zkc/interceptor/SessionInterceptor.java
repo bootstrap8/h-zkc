@@ -40,7 +40,7 @@ public class SessionInterceptor extends AbstractHandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean result = false;
         String jsid = CookieUtils.getCookieValue(request, "JSESSIONID");
-        String sid = null;
+        String sid = jsid;
         if (StringUtils.contains(jsid, ".")) {
             sid = jsid.substring(0, jsid.indexOf("."));
         }

@@ -15,7 +15,8 @@
     (
       id      varchar2(255) primary key,
       bk_time number(20),
-      size    number(10)
+      size    number(10),
+      backup_content clob
     )
   </update>
 
@@ -25,7 +26,7 @@
       id      varchar2(255),
       path    varchar2(1000),
       name    varchar2(255),
-      str_value   varchar2(2000),
+      str_value   clob,
       bk_time number(20),
       primary key (id, path, name)
     )

@@ -105,9 +105,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN || menuMap['history']">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="historyForm" :inline="true" ref="historyFormRef" :rules="historyRules" size="small">
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 历史操作记录 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="historyForm" :inline="true" ref="historyFormRef" :rules="historyRules" size="small" style="margin-top: 20px">
       <el-form-item label="时间：" prop="time">
         <el-date-picker v-model="historyForm.time" type="daterange" unlink-panels range-separator="至"
                         start-placeholder="开始时间" end-placeholder="结束时间" format="YYYY-MM-DD"
@@ -127,7 +130,6 @@ const _ = (window as any).ResizeObserver;
         <el-button type="primary" @click="searchHistory(historyFormRef)">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-divider content-position="left">查询结果</el-divider>
     <el-table :data="historyData" style="width: 100%" :border="true" table-layout="fixed" :stripe="true" size="small"
               :highlight-current-row="true" :header-cell-style="headerCellStyle">
       <el-table-column prop="user" label="用户" :show-overflow-tooltip="true" header-align="center" align="center"/>
