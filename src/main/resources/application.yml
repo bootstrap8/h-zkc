@@ -122,7 +122,7 @@ advice:
 tabula:
   enabled: true
   dialect: mysql
-  schema: workbench
+  schema: zkc
   open-edit-delete: true
 
 zkc:

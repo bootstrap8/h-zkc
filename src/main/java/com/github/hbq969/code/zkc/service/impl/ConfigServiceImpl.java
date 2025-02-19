@@ -97,6 +97,13 @@ public class ConfigServiceImpl implements ConfigService, InitializingBean {
     }
 
     @Override
+    public void batchSetPropertyValue(UserInfo ui, List<Map> list) {
+        for (Map map : list) {
+            setPropertyValue(ui, map);
+        }
+    }
+
+    @Override
     public void deleteLeaves(UserInfo ui, Map map) {
         String zkPath = MapUtils.getString(map, "zkPath");
         List<String> leafNames = (List<String>) MapUtils.getObject(map, "leafNames");
@@ -114,6 +121,13 @@ public class ConfigServiceImpl implements ConfigService, InitializingBean {
             throw new RuntimeException(e.getCause());
         }
         configDao.saveHistoryOperate(new HistoryOperate(ui.getDefaultUserName(ADMIN), "删除属性"));
+    }
+
+    @Override
+    public void batchDeleteLeaves(UserInfo ui, List<Map> list) {
+        for (Map map : list) {
+            deleteLeaves(ui, map);
+        }
     }
 
     @Override
@@ -303,7 +317,7 @@ public class ConfigServiceImpl implements ConfigService, InitializingBean {
     @Override
     public void backup() {
         long eclapse = FormatTime.nowMills();
-        Set<LeafBean> set = searchTree(UserInfo.of(null), ImmutableMap.of("path", "", "name", "", "value", ""));
+        Set<LeafBean> set = searchTree(null, ImmutableMap.of("path", "", "name", "", "value", ""));
         log.info("查询到需要备份的所有配置信息: {} 条", set.size());
         context.getOptionalBean(JdbcTemplate.class).ifPresent(jt -> {
             PlatformTransactionManager tranManager = new DataSourceTransactionManager(jt.getDataSource());

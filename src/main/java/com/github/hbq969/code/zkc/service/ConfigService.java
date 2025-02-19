@@ -20,7 +20,11 @@ public interface ConfigService {
 
   void setPropertyValue(UserInfo ui, Map map);
 
+  void batchSetPropertyValue(UserInfo ui, List<Map> list);
+
   void deleteLeaves(UserInfo ui, Map map);
+
+  void batchDeleteLeaves(UserInfo ui,List<Map> list);
 
   void createFolder(UserInfo ui, Map map);
 

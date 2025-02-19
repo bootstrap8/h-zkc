@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,6 +80,26 @@ public class ConfigCtrl {
         }
     }
 
+    @ApiOperation("批量更新配置")
+    @Version("v1.0")
+    @RequestMapping(path = "/updateProperty/batch/{v}", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> batchUpdateProperty(
+            @RequestHeader(name = "userInfo", required = false) String userInfo,
+            @ApiParam(required = true, defaultValue = "v1.0") @PathVariable String v,
+            @RequestBody List<Map> list) {
+        log.info("批量更新配置: {}", list);
+        try {
+            configService.batchSetPropertyValue(UserInfo.of(userInfo), list);
+            return Result.suc("更新成功");
+        } catch (Exception e) {
+            log.error("更新配置异常", e);
+            return (e instanceof RuntimeException) ?
+                    Result.fail(e.getMessage()) :
+                    Result.fail("更新配置异常");
+        }
+    }
+
     @ApiOperation("删除属性")
     @Version("v1.0")
     @RequestMapping(path = "/deleteLeaves/{v}", method = RequestMethod.POST)
@@ -90,6 +111,26 @@ public class ConfigCtrl {
         log.info("删除属性: {}", map);
         try {
             configService.deleteLeaves(UserInfo.of(userInfo), map);
+            return Result.suc("删除成功");
+        } catch (Exception e) {
+            log.error("删除属性异常", e);
+            return (e instanceof RuntimeException) ?
+                    Result.fail(e.getMessage()) :
+                    Result.fail("删除属性异常");
+        }
+    }
+
+    @ApiOperation("批量删除属性")
+    @Version("v1.0")
+    @RequestMapping(path = "/deleteLeaves/batch/{v}", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> batchDeleteLeaves(
+            @RequestHeader(name = "userInfo", required = false) String userInfo,
+            @ApiParam(required = true, defaultValue = "v1.0") @PathVariable String v,
+            @RequestBody List<Map> list) {
+        log.info("批量删除属性: {}", list);
+        try {
+            configService.batchDeleteLeaves(UserInfo.of(userInfo), list);
             return Result.suc("删除成功");
         } catch (Exception e) {
             log.error("删除属性异常", e);

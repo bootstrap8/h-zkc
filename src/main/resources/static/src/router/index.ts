@@ -4,7 +4,7 @@ const routes = [
     {
         path: '',
         name: '缺省',
-        component: () => import('@/views/config/login.vue')
+        component: () => import('@/views/config/main.vue')
     },
     {
         path: '/login',

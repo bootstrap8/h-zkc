@@ -6,10 +6,10 @@ spring:
       base-packages: com.github.hbq969
       default-lookup-key: hikari
     hikari:
-      jdbc-url: jdbc:mysql://docker.for.mac.host.internal:3306/workbench?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=15000
+      jdbc-url: jdbc:mysql://docker.for.mac.host.internal:3306/zkc?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=15000
       driver-class-name: com.mysql.cj.jdbc.Driver
-      username: cscenter
-      password: $AqCpZ@0392
+      username: zkc
+      password: 123456
       maximum-pool-size: 10
       minimum-idle: 2
       max-lifetime: 1800000
@@ -23,8 +23,8 @@ mybatis:
   config-location: classpath:jpaConfig-mysql.xml
 
 zkc:
-  urls: docker.for.mac.host.internal:22181
+  urls: docker.for.mac.host.internal:12181
   dialect: mysql
-  user: foo
-  pwd: bar
+#  user: foo
+#  pwd: bar
   enable-write-acl: false
