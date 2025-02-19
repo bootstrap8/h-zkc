@@ -159,9 +159,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="form" size="small" label-position="right" inline-message :inline="true">
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 菜单管理 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="form" size="small" label-position="right" inline-message :inline="true" style="margin-top: 20px">
       <el-form-item label="菜单名称" prop="name">
         <el-input v-model="form.name" placeholder="请输入..."/>
       </el-form-item>
@@ -173,7 +176,6 @@ const _ = (window as any).ResizeObserver;
         <el-button type="success" :icon="Edit" circle @click="showMenuAddDialog()" title="新增菜单"/>
       </el-form-item>
 
-      <el-divider content-position="left">查询结果</el-divider>
       <el-table :data="data.menus" style="width: 100%" :border="true" table-layout="fixed" :stripe="true"
                 size="small" :highlight-current-row="true" :header-cell-style="headerCellStyle">
         <el-table-column fixed="left" label="操作" width="180" header-align="center" align="center">

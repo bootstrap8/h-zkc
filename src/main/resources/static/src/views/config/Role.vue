@@ -225,9 +225,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="form" size="small" label-position="right" inline-message inline>
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 角色管理 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="form" size="small" label-position="right" inline-message inline style="margin-top: 20px">
       <el-form-item label="角色名称" prop="name">
         <el-input v-model="form.name" placeholder="请输入..." type="text"/>
       </el-form-item>
@@ -240,7 +243,6 @@ const _ = (window as any).ResizeObserver;
       </el-form-item>
     </el-form>
 
-    <el-divider content-position="left">查询结果</el-divider>
     <el-table :data="data.roles" style="width: 100%" :border="true" table-layout="fixed" :stripe="true"
               size="small" :highlight-current-row="true" :header-cell-style="headerCellStyle">
       <el-table-column fixed="left" label="操作" width="180" header-align="center" align="center">

@@ -257,9 +257,12 @@ const _ = (window as any).ResizeObserver;
 
 <template>
   <div class="container" v-if="isADMIN">
-    <el-link type="success" @click="router.push({path:'/main'})">返回主页</el-link>
-    <el-divider content-position="left">查询条件</el-divider>
-    <el-form :model="form" size="small" label-position="right" inline-message inline>
+    <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
+      <template #content>
+        <span class="text-large font-600 mr-3"> 用户管理 </span>
+      </template>
+    </el-page-header>
+    <el-form :model="form" size="small" label-position="right" inline-message inline style="margin-top: 20px">
       <el-form-item label="用户名" prop="username">
         <el-input v-model="form.username" placeholder="请输入..." type="text"/>
       </el-form-item>

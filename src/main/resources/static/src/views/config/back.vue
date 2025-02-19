@@ -217,9 +217,9 @@ const _ = (window as any).ResizeObserver;
 <style scoped>
 .container {
   flex-grow: 1;
-  padding: 20px 5%;
+  padding: 20px 3%;
   overflow: auto;
-  width: 60%;
+  width: 80%;
 
 }
 </style>
