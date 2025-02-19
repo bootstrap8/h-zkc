@@ -100,7 +100,7 @@ const _ = (window as any).ResizeObserver;
   <div class="container" v-if="isADMIN || menuMap['refresh']">
     <el-page-header :icon="ArrowLeft" @back="router.push({path:'/main'})">
       <template #content>
-        <span class="text-large font-600 mr-3"> 数据源配置 </span>
+        <span class="text-large font-600 mr-3"> 配置刷新 </span>
       </template>
     </el-page-header>
     <el-form :model="refreshForm" :inline="true" size="small" style="margin-top: 20px">
